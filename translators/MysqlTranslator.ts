@@ -19,7 +19,7 @@ export class MysqlTranslator<T> {
   }
 
   sqlBegin() {
-    let begin;
+    let begin = '';
     switch (this.queryBuilder.type) {
       case "insert":
         begin = "insert";

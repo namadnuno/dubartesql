@@ -1,5 +1,5 @@
 import {DBConfig} from "./types.d.ts";
-import {Schema} from "./schema";
+import {Schema} from "./schema/index.ts";
 import {Client} from "https://deno.land/x/mysql/mod.ts";
 import {QueryBuilder} from "./QueryBuilder.ts";
 
