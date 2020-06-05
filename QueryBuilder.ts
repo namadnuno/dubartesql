@@ -51,6 +51,7 @@ export class QueryBuilder<T> {
   }
 
   where(fieldOrFields: string, whereOperator: string, whereValue: string) {
+    this._type = "select";
     this._wheres.push({
       field: fieldOrFields,
       operator: whereOperator,

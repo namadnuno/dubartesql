@@ -98,6 +98,8 @@ export class Model<T> {
         this.queryBuilder.count().query(),
     );
 
+    this.queryBuilder.reset();
+
     return result.rows[0].count;
   }
 
@@ -118,19 +120,27 @@ export class Model<T> {
       fields: T,
   ) {
     const created = await this.runQuery(
-        this.queryBuilder.insert(fields),
+        this.queryBuilder.insert(fields)
     );
-
     created.item = await this.find(created.lastInsertId);
 
     return created.item;
   }
+
 
   async delete() {
     const result = await this.runQuery(
         this.queryBuilder.delete(),
     );
 
+    return result.affectedRows > 0;
+  }
+
+  async deleteById(id: string | number) {
+    this.where('id', id as string);
+    const result = await this.runQuery(
+        this.queryBuilder.delete(),
+    );
     return result.affectedRows > 0;
   }
 
@@ -170,8 +180,7 @@ export class Model<T> {
   private async runQuery(query: QueryBuilder<T>) {
     const result = await this.database.execute(query.query());
     result.rows = result.rows as Array<T>;
-    this.queryBuilder.reset();
-
+    this.queryBuilder = new QueryBuilder<T>(this.table, this.database);
     return result;
   }
 }
