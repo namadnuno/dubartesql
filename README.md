@@ -68,11 +68,12 @@ const createdBook = await Books.create(book);
 console.log(createdBook); // { id: 1, title: 'test', path: 'test', ...}
 console.log(await Books.get()); // [{ ... }, {...}, ...]
 console.log(await Books.where('id', createdBook.id).get());
+console.log(await Books.where('path', 'LINK', '%test%').count()); // 1
 console.log(await Books.find(createdBook.id)); // {...} : IBook
-console.log(await Books.where('id', createdBook.id).delete()); // boolean
 console.log(await Books.updateById(createdBook.id, {
     ASIN: 'asin-xpto'
 })); // { ... ASIN: 'asin-xpto', ...}
+console.log(await Books.where('id', createdBook.id).delete()); // boolean
 ```
 
 ## Future
