@@ -3,6 +3,11 @@ import {Schema} from "./schema/index.ts";
 import {Client} from "https://deno.land/x/mysql/mod.ts";
 import {QueryBuilder} from "./QueryBuilder.ts";
 
+export interface IEntity {
+  created_at: string | number,
+  updated_at: string | number,
+}
+
 export const database = (config: DBConfig) => {
   const client: Client = new Client();
   const schema = Schema(client);
@@ -20,7 +25,7 @@ export const database = (config: DBConfig) => {
 
 export class Model<T> {
   public table = "";
-  public timestamps = false;
+  public timestamps = true;
   private database: any;
   private queryBuilder: QueryBuilder<T>;
 
@@ -56,14 +61,16 @@ export class Model<T> {
   }
 
   async update(
-      fieldOrFields: any,
+      fieldOrFields: T,
       fieldValue?: any,
   ) {
     let fieldsToUpdate = {};
 
     if (this.timestamps) {
       // @ts-ignore
-      fieldsToUpdate.updated_at = new Date();
+      fieldOrFields.created_at = new Date(fieldOrFields.created_at).toISOString().slice(0, 19).replace('T', ' ');
+      // @ts-ignore
+      fieldOrFields.updated_at = new Date().toISOString().slice(0, 19).replace('T', ' ');
     }
 
     if (typeof fieldOrFields === "string") {
