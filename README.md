@@ -11,7 +11,7 @@ The object I have for this module is to provide a simple way to communicate with
 
 (database.ts)
 ```ts
-import { database } from "https://deno.land/x/dubartesql/mod.ts";
+import { database } from "https://raw.githubusercontent.com/namadnuno/dubartesql/master/mods.ts";
 
 const db = database({
   hostname: "127.0.0.1",
@@ -47,7 +47,7 @@ await db.schema.createTable("books", (table: any) => {
 
 (models.ts)
 ```ts
-import { Model } from "https://deno.land/x/dubartesql/mod.ts";
+import { Model } from "https://raw.githubusercontent.com/namadnuno/dubartesql/master/mods.ts";
 import db from './database.js';
 import { IBook } from './types.d.ts';
 
