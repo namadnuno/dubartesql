@@ -53,9 +53,9 @@ export class MysqlTranslator<T> {
     if (this.queryBuilder.type == "insert") {
       return `(${
         Object.keys(this.queryBuilder.fieldsToUpdateOrInsert).join(",")
-      }) values ('${
-        Object.values(this.queryBuilder.fieldsToUpdateOrInsert).join("','")
-      }')`;
+      }) values ("${
+        Object.values(this.queryBuilder.fieldsToUpdateOrInsert).join('","')
+      }")`;
     }
 
     if (this.queryBuilder.wheres.length > 0) {
