@@ -68,7 +68,10 @@ export class Model<T> {
 
     if (this.timestamps) {
       // @ts-ignore
-      fieldOrFields.created_at = new Date(fieldOrFields.created_at).toISOString().slice(0, 19).replace('T', ' ');
+      if (fieldOrFields.created_at) {
+      // @ts-ignore
+        fieldOrFields.created_at = new Date(fieldOrFields.created_at).toISOString().slice(0, 19).replace('T', ' ');
+      }
       // @ts-ignore
       fieldOrFields.updated_at = new Date().toISOString().slice(0, 19).replace('T', ' ');
     }
@@ -101,12 +104,17 @@ export class Model<T> {
   }
 
   async count() {
-    const result = await this.database.execute(
-        this.queryBuilder.count().query(),
-    );
-
-    this.queryBuilder.reset();
-
+    let result;
+    try {
+      result = await this.runQuery(
+        this.queryBuilder.count(),
+      );
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+    
+    this.queryBuilder.reset()
     return result.rows[0].count;
   }
 
