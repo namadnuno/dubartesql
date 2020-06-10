@@ -2,36 +2,41 @@ import {DBConfig} from "./types.d.ts";
 import {Schema} from "./schema/index.ts";
 import {Client} from "https://deno.land/x/mysql/mod.ts";
 import {QueryBuilder} from "./QueryBuilder.ts";
+import {Connector} from "./Connector.ts";
 
 export interface IEntity {
   created_at: string | number,
   updated_at: string | number,
 }
 
-export const database = (config: DBConfig) => {
-  const client: Client = new Client();
-  const schema = Schema(client);
+
+export const database = async (config: DBConfig) => {
+  await Connector.connect(config);
+  const schema = Schema(Connector.instance.client);
 
   return {
     connect: async () => {
-      await client.connect(config);
+      await Connector.connect(config);
     },
     schema,
     async execute(sql: string) {
-      return await client.execute(sql);
+      return await Connector.instance.client.execute(sql);
     },
   };
 };
 
+
+
 export class Model<T> {
   public table = "";
   public timestamps = true;
-  private database: any;
+  private _conn: any;
   private queryBuilder: QueryBuilder<T>;
 
-  constructor(tableName: string, database: any) {
+  constructor(tableName: string) {
     this.table = tableName;
-    this.database = database;
+    this._conn = Connector.instance;
+    this._conn.checkConnection();
     this.queryBuilder = new QueryBuilder<T>(tableName, database);
   }
 
@@ -69,7 +74,7 @@ export class Model<T> {
     if (this.timestamps) {
       // @ts-ignore
       if (fieldOrFields.created_at) {
-      // @ts-ignore
+        // @ts-ignore
         fieldOrFields.created_at = new Date(fieldOrFields.created_at).toISOString().slice(0, 19).replace('T', ' ');
       }
       // @ts-ignore
@@ -107,13 +112,13 @@ export class Model<T> {
     let result;
     try {
       result = await this.runQuery(
-        this.queryBuilder.count(),
+          this.queryBuilder.count(),
       );
     } catch (err) {
       console.log(err);
       throw err;
     }
-    
+
     this.queryBuilder.reset()
     return result.rows[0].count;
   }
@@ -189,13 +194,17 @@ export class Model<T> {
   }
 
   async sql(sql: string) {
-    return await this.database.execute(this.queryBuilder.sql(sql));
+    return await this._conn.execute(this.queryBuilder.sql(sql));
   }
 
   private async runQuery(query: QueryBuilder<T>) {
-    const result = await this.database.execute(query.query());
+    const result = await this._conn.execute(query.query());
     result.rows = result.rows as Array<T>;
-    this.queryBuilder = new QueryBuilder<T>(this.table, this.database);
+    this.queryBuilder = new QueryBuilder<T>(this.table, this._conn);
     return result;
+  }
+
+  get database(): any {
+    return this._conn;
   }
 }
