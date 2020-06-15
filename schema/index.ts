@@ -8,5 +8,8 @@ export const Schema = (client: any) => {
       cb(tableCreator);
       await tableCreator.run();
     },
+    removeTable: async (tableName: string) => {
+      client.execute("DROP TABLE IF EXIST " + tableName);
+    }
   };
 };

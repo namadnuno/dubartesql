@@ -19,8 +19,6 @@ export class TableCreator {
   }
 
   increments(name: string) {
-    //sql.push(`PRIMARY KEY (${name})`);
-    //this.addColumn(new Column(name, "int(11)").asPrimaryKey().incrementable())
     return this.withNewColumn(new Column(name, "int(11)").asPrimaryKey().incrementable());
   }
 
@@ -85,17 +83,31 @@ export class TableCreator {
 
   getSqlColumns() {
     return this._columns.reduce((acc: any, col: any) => {
-      return [...acc, ...col.toSqlString()];
+      return [...acc, col.toSqlString()];
     }, []);
   }
 
+  getPrimaryKey() {
+    return this.columns.find( (c : Column) => c.isPrimaryKey());
+  }
+
+  hasPrimaryKey() {
+    return this.columns.findIndex( (c : Column) => c.isPrimaryKey()) > -1;
+  }
+
+  getExtraSql() {
+    if (this.hasPrimaryKey()) {
+      return [ this.getPrimaryKey().getExtraSql() ];
+    }
+
+    return [];
+  }
+
   async run() {
-    let columnsSql = this.getSqlColumns();
-    const sql = `
-    CREATE TABLE ${this.table} (
-      ${columnsSql.join(", \n")}
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`;
-    console.log(sql);
+    let columnsSql = [... this.getSqlColumns(), ... this.getExtraSql() ];
+    const sql = 'CREATE TABLE ' + this.table +' ( \n' +
+      columnsSql.join(", \n") +
+  ' \n) ENGINE=InnoDB DEFAULT CHARSET=utf8;';
     await this.client.execute(sql);
   }
 

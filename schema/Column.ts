@@ -23,6 +23,7 @@ export default class Column {
         this.name = name;
         this.dataType = dataType;
         this._triggers = {};
+        this._default = '';
     }
 
     incrementable() {
@@ -67,7 +68,15 @@ export default class Column {
         return string;
     }
 
+    getExtraSql() {
+        if (this.isPrimaryKey()) {
+            return `PRIMARY KEY (${this.name})`
+        }
+
+        return "";
+    }
+
     toSqlString() {
-        return (`${this.name} ${this.dataType} ${this.definition.null ? 'NULL' : 'NOT NULL'} ${this._default != '' ? 'DEFAULT ' + this._default : ''} ${this.definition.auto_increment ? 'AUTO_INCREMENT' : ''} ${this.triggersToString()}`).trim()
+        return (`${this.name} ${this.dataType} ${this.definition.null ? 'NULL' : 'NOT NULL'} ${this._default != '' ? 'DEFAULT ' + this._default : ''} ${this.definition.auto_increment ? 'AUTO_INCREMENT' : ''} ${this.triggersToString()}`).replace('  ', ' ').trim()
     }
 }
