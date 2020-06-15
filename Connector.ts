@@ -23,7 +23,8 @@ export class Connector {
         return this._instance;
     }
 
-    public static drop() {
+    public static async drop() {
+        await this._instance._client.close();
         this._instance = new this();
     }
 

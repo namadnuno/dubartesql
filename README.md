@@ -25,11 +25,49 @@ await db.connect();
 export default db;
 ``` 
 
+### Creating a model:
+
+(models.ts)
+```ts
+import { Model, TableCreator } from "https://deno.land/x/dubartesql/mods.ts";
+import db from './database.js';
+import { IBook } from './types.d.ts';
+
+// Option 1
+export const Books = new Model<IBook>('books'); // params: tableName 
+
+// Option 2
+class Book extends Model<IBook> {
+    constructor() {
+        super('books'); // table name
+    }
+    
+    definition(table : TableCreator) {
+        table.increments("id", true);
+        table.string("cover");
+        table.string("title");
+        table.string("ASIN");
+        table.string("publisher");
+        table.string("creator");
+        table.string("language");
+        table.string("path");
+        table.timestamps(true, true);
+        table.addColumn(new Column('amazon_link', 'MEDIUMTEXT'))
+    }
+}
+
+// Still, you have to create the Model
+export const Books = new Book(); 
+```
+
 ### Creating a migration file:
 
 (migate.ts)
 ```ts
 import db from './database.js';
+
+// Option 1
+// You can use the db.schema.createTable method to create the table as follow:
 import { Column } from 'https://deno.land/x/dubartesql/mods.ts';
 
 await db.schema.createTable("books", (table: any) => {
@@ -44,17 +82,12 @@ await db.schema.createTable("books", (table: any) => {
   table.timestamps(true, true);
   table.addColumn(new Column('amazon_link', 'MEDIUMTEXT')) // when you want a type that is not defined with the helper function
 });
-```
 
-### Creating a model:
+// Option 2
+// A cleaner option is using the definition method of the Model
+import { Books } from 'models.ts';
 
-(models.ts)
-```ts
-import { Model } from "https://deno.land/x/dubartesql/mods.ts";
-import db from './database.js';
-import { IBook } from './types.d.ts';
-
-export const Books = new Model<IBook>('books'); // params: tableName
+await Books.migrate();
 ```
 
 ### Database Communication:
