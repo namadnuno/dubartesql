@@ -111,7 +111,7 @@ export class TableCreator {
     await this.client.execute(sql);
   }
 
-  addColumn(col: any) {
+  addColumn(col: Column) {
     this._columns.push(col);
   }
 

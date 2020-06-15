@@ -1,8 +1,6 @@
-import {assertEquals} from "https://deno.land/std/testing/asserts.ts";
-import { mock } from "https://raw.githubusercontent.com/allain/expect/master/mod.ts";
-import { expect } from "https://raw.githubusercontent.com/allain/expect/master/expect.ts";
+import {mock} from "https://raw.githubusercontent.com/allain/expect/master/mod.ts";
+import {expect} from "https://raw.githubusercontent.com/allain/expect/master/expect.ts";
 import {database} from '../index.ts';
-import Column from "../schema/Column.ts";
 import {TableCreator} from "../schema/TableCreator.ts";
 import {Connector} from "../Connector.ts";
 
@@ -28,3 +26,4 @@ Deno.test("table is called with the right sql", () => {
     );
     db.schema.removeTable('test_table');
 });
+
