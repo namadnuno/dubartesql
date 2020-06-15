@@ -3,4 +3,5 @@ export interface DBConfig {
   username: string;
   db: string;
   password: string;
+  poolSize?: number
 }

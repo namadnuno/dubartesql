@@ -18,6 +18,7 @@ const db = database({
   db: "<db>",
   username: "root",
   password: "root",
+  poolSize: 5, // by default is 5
 });
 await db.connect();
 
@@ -29,6 +30,7 @@ export default db;
 (migate.ts)
 ```ts
 import db from './database.js';
+import { Column } from 'https://deno.land/x/dubartesql/mods.ts';
 
 await db.schema.createTable("books", (table: any) => {
   table.increments("id", true);
@@ -40,6 +42,7 @@ await db.schema.createTable("books", (table: any) => {
   table.string("language");
   table.string("path");
   table.timestamps(true, true);
+  table.addColumn(new Column('amazon_link', 'MEDIUMTEXT')) // when you want a type that is not defined with the helper function
 });
 ```
 
@@ -78,8 +81,7 @@ console.log(await Books.where('id', createdBook.id).delete()); // boolean
 
 ## Future
 I would want to add the following features in the future:
-- Unit Tests
-- Improving migrations
+- Adding migrations
 - Relationships between tables
 - More engines
 - Interface enhancements

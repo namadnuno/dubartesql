@@ -1,10 +1,11 @@
-import { assertNotEquals, assertEquals, assertThrows } from "https://deno.land/std/testing/asserts.ts";
-import { Model, database } from '../index.ts';
+import {assertEquals, assertThrows} from "https://deno.land/std/testing/asserts.ts";
+import {database, Model} from '../index.ts';
 import {Connector} from "../Connector.ts";
 
 interface IBook {
     title?: String
 }
+
 
 Deno.test("is required to connect before creating a model", () => {
     assertThrows(() => new Model<IBook>('test-table'));
