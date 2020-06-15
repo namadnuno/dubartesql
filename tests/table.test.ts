@@ -18,7 +18,7 @@ Deno.test("table is called with the right sql", () => {
         table.string('title');
     });
     expect(Connector.instance.client.execute).toHaveBeenLastCalledWith(
-        'CREATE TABLE test_table ( \n' +
+        'CREATE TABLE IF NOT EXISTS test_table ( \n' +
         'id int(11) NOT NULL AUTO_INCREMENT, \n' +
         'title varchar(255) NOT NULL, \n' +
         'PRIMARY KEY (id) \n' +

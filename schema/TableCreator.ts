@@ -105,7 +105,7 @@ export class TableCreator {
 
   async run() {
     let columnsSql = [... this.getSqlColumns(), ... this.getExtraSql() ];
-    const sql = 'CREATE TABLE ' + this.table +' ( \n' +
+    const sql = 'CREATE TABLE IF NOT EXISTS ' + this.table +' ( \n' +
       columnsSql.join(", \n") +
   ' \n) ENGINE=InnoDB DEFAULT CHARSET=utf8;';
     await this.client.execute(sql);

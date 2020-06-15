@@ -54,7 +54,16 @@ import { Model } from "https://deno.land/x/dubartesql/mods.ts";
 import db from './database.js';
 import { IBook } from './types.d.ts';
 
-export const Books = new Model<IBook>('books'); // params: tableName
+// Option 1
+export const Books = new Model<IBook>('books'); // params: tableName 
+
+// Option 2
+class Book extends Model<IBook> {
+    constructor() {
+        super('books'); // table name
+    }
+}
+
 ```
 
 ### Database Communication:

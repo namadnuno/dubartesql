@@ -31,16 +31,16 @@ export const database = async (config: DBConfig) => {
 
 
 export class Model<T> {
-  public table = "";
+   public table : string;
   public timestamps = true;
   private _conn: any;
   private queryBuilder: QueryBuilder<T>;
 
-  constructor(tableName: string) {
+  constructor(tableName: string = '') {
     this.table = tableName;
     this._conn = Connector.instance;
     this._conn.checkConnection();
-    this.queryBuilder = new QueryBuilder<T>(tableName, database);
+    this.queryBuilder = new QueryBuilder<T>(this.table, database);
   }
 
   where(
@@ -197,17 +197,28 @@ export class Model<T> {
   }
 
   async sql(sql: string) {
-    return await this._conn.execute(this.queryBuilder.sql(sql));
+    return await this._conn.client.execute(this.queryBuilder.sql(sql));
   }
 
   private async runQuery(query: QueryBuilder<T>) {
-    const result = await this._conn.execute(query.query());
+    const result = await this._conn.client.execute(query.query());
     result.rows = result.rows as Array<T>;
     this.queryBuilder = new QueryBuilder<T>(this.table, this._conn);
     return result;
   }
 
+  public async truncate() : Promise<any> {
+    const result = await this.sql("TRUNCATE " + this.table);
+    console.log(result);
+
+    return result;
+  }
+
   get database(): any {
     return this._conn;
+  }
+
+  get tableName(): string {
+    return this.table;
   }
 }
