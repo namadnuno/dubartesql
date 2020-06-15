@@ -18,6 +18,7 @@ const db = database({
   db: "<db>",
   username: "root",
   password: "root",
+  poolSize: 5, // by default is 5
 });
 await db.connect();
 

@@ -11,6 +11,9 @@ export interface IEntity {
 
 
 export const database = async (config: DBConfig) => {
+  if (!config.poolSize) {
+    config.poolSize = 5;
+  }
   await Connector.connect(config);
   const schema = Schema(Connector.instance.client);
 
