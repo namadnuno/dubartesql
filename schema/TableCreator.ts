@@ -1,4 +1,5 @@
 import Column from "./Column.ts";
+import {Connector} from "../Connector.ts";
 
 const creatorsDefinitions = {};
 
@@ -7,10 +8,10 @@ export class TableCreator {
   private client: any;
   private table: string;
 
-  constructor(table: string, client: any) {
+  constructor(table: string) {
     this.table = table;
     this._columns = [];
-    this.client = client;
+    this.client = Connector.instance.client;
   }
 
   withNewColumn (column: Column) {

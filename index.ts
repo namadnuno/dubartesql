@@ -1,8 +1,8 @@
 import {DBConfig} from "./types.d.ts";
 import {Schema} from "./schema/index.ts";
-import {Client} from "https://deno.land/x/mysql/mod.ts";
 import {QueryBuilder} from "./QueryBuilder.ts";
 import {Connector} from "./Connector.ts";
+import {TableCreator} from "./schema/TableCreator.ts";
 
 export interface IEntity {
   created_at: string | number,
@@ -19,7 +19,7 @@ export const database = async (config: DBConfig) => {
 
   return {
     connect: async () => {
-      await Connector.connect(config);
+      await Connector.instance.connect(config);
     },
     schema,
     async execute(sql: string) {
@@ -29,9 +29,8 @@ export const database = async (config: DBConfig) => {
 };
 
 
-
 export class Model<T> {
-   public table : string;
+  public table: string;
   public timestamps = true;
   private _conn: any;
   private queryBuilder: QueryBuilder<T>;
@@ -207,7 +206,7 @@ export class Model<T> {
     return result;
   }
 
-  public async truncate() : Promise<any> {
+  public async truncate(): Promise<any> {
     const result = await this.sql("TRUNCATE " + this.table);
     console.log(result);
 
@@ -220,5 +219,15 @@ export class Model<T> {
 
   get tableName(): string {
     return this.table;
+  }
+
+  public definition(table: TableCreator) {
+    // will be override
+  }
+
+  public async migrate() {
+    const tableCreator = new TableCreator(this.table);
+    this.definition(tableCreator);
+    await tableCreator.run();
   }
 }

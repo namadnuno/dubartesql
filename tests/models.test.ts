@@ -11,6 +11,11 @@ class Book extends Model<IBook> {
     constructor() {
         super('books');
     }
+
+    definition(table : TableCreator) {
+        table.increments('id');
+        table.string('title');
+    }
 }
 
 Deno.test("is required to connect before creating a model", () => {
@@ -42,4 +47,19 @@ Deno.test("a model can extend from a Model Class", async () => {
     const Books = new Book();
     assertEquals('books', Books.table);
     assertEquals('books', Books.tableName);
+    Connector.drop();
+});
+
+Deno.test("definition method is used to create the table", async () => {
+    const db = await database({
+        db: 'test',
+        hostname: '127.0.0.1',
+        username: 'user',
+        password: 'user',
+    });
+    await db.schema.removeTable('books');
+    const Books = new Book();
+    Books.migrate();
+    assertNotEquals(await Books.get(), null);
+    Connector.drop();
 });
